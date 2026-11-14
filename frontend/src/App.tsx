@@ -9,6 +9,7 @@ import { AppleShortcutsModal } from './components/AppleShortcutsModal';
 import { AuthModal } from './components/AuthModal';
 import { WorkoutsView } from './components/WorkoutsView';
 import { CustomMenuBuilderModal } from './components/CustomMenuBuilderModal';
+import { GeminiSleepCard } from './components/GeminiSleepCard';
 import { triggerHaptic } from './utils/applePhysics';
 import { UserProfile } from './types/auth';
 import {
@@ -32,7 +33,8 @@ import {
   Layers,
   UtensilsCrossed,
   MoonStar,
-  Clock
+  Clock,
+  ChevronRight
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -526,6 +528,33 @@ export const App: React.FC = () => {
               </div>
             </div>
 
+            {/* Gemini AI Sleep & Recovery Banner */}
+            <div
+              onClick={() => {
+                triggerHaptic('light');
+                setActiveTab('HEALTH');
+              }}
+              className="p-3.5 rounded-2xl bg-gradient-to-r from-purple-600/10 via-indigo-600/10 to-blue-600/10 border border-purple-500/20 flex items-center justify-between cursor-pointer apple-pressable"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center shadow-sm">
+                  <Moon className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                      Gemini Sleep Coach
+                    </span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-apple-green" />
+                  </div>
+                  <span className="text-xs font-semibold text-[#1C1C1E] dark:text-white block mt-0.5">
+                    Индекс восстановления: 85% • Проверить ночной СТГ и готовность
+                  </span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-apple-gray-1 flex-shrink-0" />
+            </div>
+
             {/* DORMITORY MODE CONTENT */}
             {dietaryMode === 'DORMITORY' && (
               <div className="space-y-4">
@@ -694,17 +723,20 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* TAB 3: APPLE HEALTH */}
+        {/* TAB 3: APPLE HEALTH & GEMINI SLEEP */}
         {activeTab === 'HEALTH' && (
           <div className="space-y-4">
             <div className="px-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-apple-gray-1">
-                Интеграция с устройствами
+              <span className="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                ИИ-Анализ Восстановления & Синхронизация
               </span>
               <h2 className="text-2xl font-extrabold tracking-tight text-[#1C1C1E] dark:text-white">
-                Apple Health & Shortcuts
+                Сон, Восстановление и Gemini AI
               </h2>
             </div>
+
+            {/* Google Gemini AI Sleep & Recovery Analysis */}
+            <GeminiSleepCard userId={currentUser.id} />
 
             <div className="apple-card p-5 space-y-4">
               <div className="flex items-center gap-3">

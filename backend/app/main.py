@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1.endpoints import canteen, products, food_logs, health, auth, workouts
+from app.api.v1.endpoints import canteen, products, food_logs, health, auth, workouts, sleep
 
 app = FastAPI(
     title="PWA Recomp & Nutrition API",
@@ -25,6 +25,7 @@ app.include_router(products.router, prefix="/api/v1")
 app.include_router(food_logs.router, prefix="/api/v1")
 app.include_router(health.router, prefix="/api/v1")
 app.include_router(workouts.router, prefix="/api/v1")
+app.include_router(sleep.router, prefix="/api/v1")
 
 @app.get("/")
 def root():

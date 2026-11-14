@@ -242,3 +242,24 @@ CREATE TABLE IF NOT EXISTS body_progress_photos (
     pose_type VARCHAR(20) DEFAULT 'FRONT',
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 10. СОН И ИИ-АНАЛИЗ ВОССТАНОВЛЕНИЯ (GEMINI AI)
+CREATE TABLE IF NOT EXISTS sleep_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sleep_date DATE NOT NULL,
+    bed_time VARCHAR(10),
+    wake_time VARCHAR(10),
+    duration_hours REAL NOT NULL,
+    deep_sleep_hours REAL,
+    rem_sleep_hours REAL,
+    quality_rating INTEGER DEFAULT 4,
+    notes TEXT,
+    ai_recovery_score INTEGER,
+    ai_verdict VARCHAR(255),
+    ai_analysis_json TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_user_sleep_date UNIQUE (user_id, sleep_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sleep_user_date ON sleep_logs(user_id, sleep_date);

@@ -77,6 +77,7 @@ class User(Base):
     workout_templates = relationship("WorkoutTemplate", back_populates="user", cascade="all, delete-orphan")
     measurements = relationship("BodyMeasurement", back_populates="user", cascade="all, delete-orphan")
     progress_photos = relationship("BodyProgressPhoto", back_populates="user", cascade="all, delete-orphan")
+    sleep_logs = relationship("SleepLog", back_populates="user", cascade="all, delete-orphan")
 
 # ----------------- 2. ПРОДУКТЫ И OPEN FOOD FACTS -----------------
 class Product(Base):
@@ -366,3 +367,31 @@ class BodyProgressPhoto(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="progress_photos")
+
+# ----------------- 8. СОН И ИИ-АНАЛИЗ ВОССТАНОВЛЕНИЯ (GEMINI AI) -----------------
+class SleepLog(Base):
+    __tablename__ = "sleep_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    sleep_date = Column(Date, nullable=False, index=True)
+    bed_time = Column(String(10), nullable=True) # "23:30"
+    wake_time = Column(String(10), nullable=True) # "07:15"
+    duration_hours = Column(Float, nullable=False) # 7.75
+    deep_sleep_hours = Column(Float, nullable=True) # 1.8
+    rem_sleep_hours = Column(Float, nullable=True) # 1.5
+    quality_rating = Column(Integer, default=4) # 1..5
+    notes = Column(Text, nullable=True)
+    
+    # Результаты анализа Gemini AI
+    ai_recovery_score = Column(Integer, nullable=True) # 0..100
+    ai_verdict = Column(String(255), nullable=True)
+    ai_analysis_json = Column(Text, nullable=True) # Полный JSON ответ Gemini
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="sleep_logs")
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "sleep_date", name="uq_user_sleep_date"),
+    )
