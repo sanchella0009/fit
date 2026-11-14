@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Apple iOS Design System & Mobile Physics Baseline
+   ========================================================================== */
+
+:root {
+  --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --ease-spring: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  --ease-crit-damped: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-press: cubic-bezier(0.2, 0, 0, 1);
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+  font-family: var(--apple-font);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  touch-action: pan-y;
+  background-color: #F2F2F7;
+  color: #1C1C1E;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000000;
+    color: #F2F2F7;
+  }
+}
+
+/* Hard Rule: Always 16px font-size to prevent iOS Safari auto-zoom */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* Tap responsiveness & elimination of 300ms tap delay */
+button, a, [role="button"], .tappable {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+button, [role="button"], .tab, .chip, .drag-handle {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Apple Immediate Press Feedback (Physics of Direct Response) */
+.apple-pressable {
+  transition: transform 120ms var(--ease-press), opacity 120ms ease;
+  will-change: transform;
+}
+
+.apple-pressable:active {
+  transform: scale(0.965);
+  opacity: 0.85;
+}
+
+.apple-pressable-subtle:active {
+  transform: scale(0.985);
+  opacity: 0.92;
+}
+
+/* Apple Translucent Materials (Vibrancy & Frosted Blur) */
+.apple-glass-nav {
+  background: rgba(242, 242, 247, 0.78);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  .apple-glass-nav {
+    background: rgba(22, 22, 24, 0.75);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.apple-glass-bar {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border-top: 0.5px solid rgba(60, 60, 67, 0.15);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  .apple-glass-bar {
+    background: rgba(28, 28, 30, 0.82);
+    border-top: 0.5px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.apple-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border: 0.5px solid rgba(60, 60, 67, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .apple-card {
+    background: #1C1C1E;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Safe Area Insets for iOS Notch & Dynamic Island */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+.h-safe-screen {
+  height: 100dvh;
+}
+
+/* Apple Squircle Continuous Radius Utility */
+.apple-squircle {
+  border-radius: 20px;
+}
+
+/* Hide scrollbars for clean iOS aesthetic */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
