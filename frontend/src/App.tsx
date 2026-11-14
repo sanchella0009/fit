@@ -490,13 +490,22 @@ export const App: React.FC = () => {
             />
 
             {/* Activity Sync Ribbon */}
-            <div className="apple-card p-3.5 flex items-center justify-between gap-3">
+            <div
+              onClick={() => {
+                triggerHaptic('light');
+                setIsShortcutsOpen(true);
+              }}
+              className="apple-card p-3.5 flex items-center justify-between gap-3 cursor-pointer apple-pressable relative overflow-hidden"
+            >
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-apple-orange/15 text-apple-orange flex items-center justify-center">
                   <Footprints className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-[11px] text-apple-gray-1 font-medium block leading-none">Apple Шаги</span>
+                  <span className="text-[11px] text-apple-gray-1 font-medium block leading-none flex items-center gap-1">
+                    <span>Шаги</span>
+                    <Zap className="w-2.5 h-2.5 text-apple-orange" />
+                  </span>
                   <span className="text-sm font-bold text-[#1C1C1E] dark:text-white">
                     {healthMetrics.steps.toLocaleString()}
                   </span>
@@ -520,7 +529,7 @@ export const App: React.FC = () => {
                   <Scale className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-[11px] text-apple-gray-1 font-medium block leading-none">Вес тела</span>
+                  <span className="text-[11px] text-apple-gray-1 font-medium block leading-none">Вес</span>
                   <span className="text-sm font-bold text-[#1C1C1E] dark:text-white">
                     {healthMetrics.weight} <span className="text-xs font-normal text-apple-gray-1">кг</span>
                   </span>
@@ -768,17 +777,19 @@ export const App: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  triggerHaptic('medium');
-                  setIsShortcutsOpen(true);
-                }}
-                className="w-full py-3 bg-apple-blue text-white rounded-xl text-xs font-bold shadow-md apple-pressable flex items-center justify-center gap-2"
-              >
-                <Zap className="w-4 h-4" />
-                <span>Настроить быструю команду iOS</span>
-              </button>
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('medium');
+                    setIsShortcutsOpen(true);
+                  }}
+                  className="w-full py-3.5 bg-gradient-to-r from-apple-orange via-apple-red to-apple-purple text-white rounded-2xl text-xs font-black shadow-lg shadow-orange-500/25 apple-pressable flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-4 h-4 fill-white" />
+                  <span>Добавить автоматизацию в 1 клик</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
