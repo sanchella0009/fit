@@ -30,7 +30,9 @@ import {
   Upload,
   Lock,
   Layers,
-  UtensilsCrossed
+  UtensilsCrossed,
+  MoonStar,
+  Clock
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -166,6 +168,34 @@ const SAMPLE_CANTEEN_MENU: Record<string, DishItem[]> = {
       fat: 6.2,
       carbs: 31.0
     }
+  ],
+  LATE_DINNER: [
+    {
+      id: 111,
+      dish_name: "Кефир",
+      weight_raw: "200",
+      weight_g: 200,
+      card_number_raw: "95",
+      tech_card_id: 95,
+      calories: 100.0,
+      protein: 5.8,
+      fat: 5.0,
+      carbs: 8.0,
+      has_recipe_details: true
+    },
+    {
+      id: 112,
+      dish_name: "Батон «Столовый»",
+      weight_raw: "25",
+      weight_g: 25,
+      card_number_raw: "102",
+      tech_card_id: 102,
+      calories: 66.3,
+      protein: 2.0,
+      fat: 0.5,
+      carbs: 13.3,
+      has_recipe_details: true
+    }
   ]
 };
 
@@ -237,6 +267,7 @@ export const App: React.FC = () => {
     fat: number;
     carbs: number;
     meal_type: string;
+    meal_time?: string;
   }>>([]);
 
   // User-created custom cycle dishes for other users
@@ -328,6 +359,22 @@ export const App: React.FC = () => {
 
   const handleAddCustomLog = (entry: any) => {
     setCustomLogs((prev) => [...prev, entry]);
+    try {
+      axios.post('/api/v1/food-logs', {
+        user_id: currentUser.id,
+        meal_type: entry.meal_type,
+        entry_type: 'CUSTOM',
+        custom_title: entry.title,
+        amount_g: entry.amount_g,
+        custom_calories: entry.calories,
+        custom_protein: entry.protein,
+        custom_fat: entry.fat,
+        custom_carbs: entry.carbs,
+        meal_time: entry.meal_time
+      }).catch((err) => console.log('Offline/local log mode:', err));
+    } catch (e) {
+      // offline fallback
+    }
   };
 
   const handleAddCustomMenuDish = (dish: any) => {
@@ -342,14 +389,16 @@ export const App: React.FC = () => {
     BREAKFAST: <Coffee className="w-4 h-4 text-apple-orange" />,
     LUNCH: <Sun className="w-4 h-4 text-apple-yellow" />,
     AFTERNOON_SNACK: <Sunset className="w-4 h-4 text-apple-teal" />,
-    DINNER: <Moon className="w-4 h-4 text-apple-purple" />
+    DINNER: <Moon className="w-4 h-4 text-apple-purple" />,
+    LATE_DINNER: <MoonStar className="w-4 h-4 text-apple-indigo" />
   };
 
   const mealNames: Record<string, string> = {
     BREAKFAST: "Завтрак",
     LUNCH: "Обед",
     AFTERNOON_SNACK: "Полдник",
-    DINNER: "Ужин"
+    DINNER: "Ужин",
+    LATE_DINNER: "Вечерний ужин (2-й ужин)"
   };
 
   return (
@@ -596,7 +645,15 @@ export const App: React.FC = () => {
                       {customLogs.map((item, idx) => (
                         <div key={idx} className="apple-card p-3.5 flex items-center justify-between">
                           <div>
-                            <h5 className="text-sm font-semibold text-[#1C1C1E] dark:text-white">{item.title}</h5>
+                            <div className="flex items-center gap-2">
+                              <h5 className="text-sm font-semibold text-[#1C1C1E] dark:text-white">{item.title}</h5>
+                              {item.meal_time && (
+                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-apple-blue bg-apple-blue/10 dark:bg-apple-blue/20 px-2 py-0.5 rounded-full">
+                                  <Clock className="w-3 h-3" />
+                                  <span>{item.meal_time}</span>
+                                </span>
+                              )}
+                            </div>
                             <span className="text-xs text-apple-gray-1">{item.amount_g} г • {mealNames[item.meal_type] || item.meal_type}</span>
                           </div>
                           <div className="text-right">

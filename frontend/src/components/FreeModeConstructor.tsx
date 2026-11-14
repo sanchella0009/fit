@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SegmentedControl } from './SegmentedControl';
 import { triggerHaptic } from '../utils/applePhysics';
-import { Search, ScanBarcode, Plus, Check, Sparkles } from 'lucide-react';
+import { Search, ScanBarcode, Plus, Check, Sparkles, Clock } from 'lucide-react';
 import axios from 'axios';
 
 interface ProductItem {
@@ -28,6 +28,7 @@ interface FreeModeConstructorProps {
     carbs: number;
     meal_type: string;
     product_id?: number;
+    meal_time?: string;
   }) => void;
 }
 
@@ -51,12 +52,17 @@ export const FreeModeConstructor: React.FC<FreeModeConstructorProps> = ({
   const [mealType, setMealType] = useState<string>('BREAKFAST');
   const [barcodeQuery, setBarcodeQuery] = useState('');
   const [isScanning, setIsScanning] = useState(false);
+  const [mealTime, setMealTime] = useState<string>(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  });
 
   const mealOptions = [
     { value: 'BREAKFAST', label: 'Завтрак' },
     { value: 'LUNCH', label: 'Обед' },
     { value: 'AFTERNOON_SNACK', label: 'Полдник' },
     { value: 'DINNER', label: 'Ужин' },
+    { value: 'LATE_DINNER', label: '2-й ужин' },
   ];
 
   const filteredProducts = POPULAR_PRESETS.filter(p =>
@@ -116,7 +122,8 @@ export const FreeModeConstructor: React.FC<FreeModeConstructorProps> = ({
       fat: parseFloat(currentFat),
       carbs: parseFloat(currentCarbs),
       meal_type: mealType,
-      product_id: selectedProduct.id
+      product_id: selectedProduct.id,
+      meal_time: mealTime
     });
     setSelectedProduct(null);
     onClose();
@@ -139,6 +146,27 @@ export const FreeModeConstructor: React.FC<FreeModeConstructorProps> = ({
             options={mealOptions}
             value={mealType}
             onChange={setMealType}
+          />
+        </div>
+
+        {/* Meal Time Selector ("Время приема пищи / время жора") */}
+        <div className="flex items-center justify-between p-3 rounded-2xl bg-apple-gray-6 dark:bg-[#2C2C2E] border border-black/[0.04] dark:border-white/[0.06]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-apple-blue/15 text-apple-blue flex items-center justify-center">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-xs font-semibold text-[#1C1C1E] dark:text-white block leading-tight">
+                Время приёма (время жора)
+              </span>
+              <span className="text-[10px] text-apple-gray-1">Фиксация точного времени в дневнике</span>
+            </div>
+          </div>
+          <input
+            type="time"
+            value={mealTime}
+            onChange={(e) => setMealTime(e.target.value)}
+            className="px-2.5 py-1 text-xs font-bold rounded-xl bg-white dark:bg-[#1C1C1E] text-[#1C1C1E] dark:text-white border border-black/10 dark:border-white/10 outline-none focus:ring-2 focus:ring-apple-blue"
           />
         </div>
 

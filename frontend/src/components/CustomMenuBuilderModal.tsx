@@ -33,6 +33,7 @@ export const CustomMenuBuilderModal: React.FC<CustomMenuBuilderModalProps> = ({
     { value: 'LUNCH', label: 'Обед' },
     { value: 'AFTERNOON_SNACK', label: 'Полдник' },
     { value: 'DINNER', label: 'Ужин' },
+    { value: 'LATE_DINNER', label: 'Вечерний ужин' },
   ];
 
   const handleAddDish = () => {

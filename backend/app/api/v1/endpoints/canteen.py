@@ -27,7 +27,8 @@ def group_dishes(dishes):
         "BREAKFAST": [],
         "LUNCH": [],
         "AFTERNOON_SNACK": [],
-        "DINNER": []
+        "DINNER": [],
+        "LATE_DINNER": []
     }
     for d in dishes:
         m_type = d.meal_type.value if hasattr(d.meal_type, "value") else str(d.meal_type)

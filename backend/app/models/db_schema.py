@@ -22,6 +22,7 @@ class MealType(str, enum.Enum):
     LUNCH = "LUNCH"
     AFTERNOON_SNACK = "AFTERNOON_SNACK"
     DINNER = "DINNER"
+    LATE_DINNER = "LATE_DINNER"  # Второй ужин / Вечерний ужин (кефир, батон перед сном)
     SNACK = "SNACK"
 
 class FoodEntryType(str, enum.Enum):
@@ -238,6 +239,7 @@ class FoodLog(Base):
     title_snapshot = Column(String(255), nullable=False)
     portion_multiplier = Column(Float, default=1.0) # Для столовой (0.5x, 1x, 1.5x, 2x)
     amount_g = Column(Float, nullable=False)         # Фактический вес порции в граммах
+    meal_time = Column(String(10), nullable=True)    # Время приема пищи (например "14:30", время жора)
 
     # Итоговые рассчитанные КБЖУ данной порции
     calories = Column(Float, nullable=False)

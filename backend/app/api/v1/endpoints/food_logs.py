@@ -33,6 +33,7 @@ class LogEntryCreate(BaseModel):
     custom_title: Optional[str] = None
     portion_multiplier: float = Field(default=1.0, description="Множитель для столовой (0.5, 1.0, 1.5, 2.0)")
     amount_g: Optional[float] = Field(default=None, description="Вес в граммах")
+    meal_time: Optional[str] = Field(default=None, description="Время приема пищи (HH:MM)")
     
     # Прямой ввод калорий при ручном CUSTOM вводе
     custom_calories: Optional[float] = None
@@ -118,6 +119,7 @@ def add_food_log_entry(payload: LogEntryCreate, db: Session = Depends(get_db)):
         title_snapshot=title,
         portion_multiplier=payload.portion_multiplier,
         amount_g=amount,
+        meal_time=payload.meal_time,
         calories=cal,
         protein=prot,
         fat=fat,
@@ -132,6 +134,7 @@ def add_food_log_entry(payload: LogEntryCreate, db: Session = Depends(get_db)):
         "entry_id": entry.id,
         "title": entry.title_snapshot,
         "amount_g": entry.amount_g,
+        "meal_time": entry.meal_time,
         "calories": entry.calories,
         "protein": entry.protein,
         "fat": entry.fat,
@@ -166,6 +169,7 @@ def get_daily_dashboard(
         "LUNCH": [],
         "AFTERNOON_SNACK": [],
         "DINNER": [],
+        "LATE_DINNER": [],
         "SNACK": []
     }
 
@@ -187,6 +191,7 @@ def get_daily_dashboard(
             "protein": l.protein,
             "fat": l.fat,
             "carbs": l.carbs,
+            "meal_time": l.meal_time,
             "entry_type": l.entry_type.value if hasattr(l.entry_type, "value") else str(l.entry_type)
         })
         tot_cal += l.calories
