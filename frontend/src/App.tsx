@@ -197,12 +197,28 @@ export const App: React.FC = () => {
   // Dietary Mode
   const [dietaryMode, setDietaryMode] = useState<string>(currentUser.dietary_mode || 'DORMITORY');
 
-  // Cycle day
+  // Cycle day: 31 августа 2026 — Понедельник (День 1 цикла).
+  // Соответственно, 14 ноября 2026 (суббота) — это ровно День 6.
   const today = new Date();
-  const cycleStartDate = new Date(2026, 8, 1);
+  const cycleStartDate = new Date(2026, 7, 31);
   const diffDays = Math.floor((today.getTime() - cycleStartDate.getTime()) / (1000 * 3600 * 24));
   const defaultCycleDay = ((Math.max(0, diffDays)) % 14) + 1;
-  const [selectedCycleDay, setSelectedCycleDay] = useState<number>(defaultCycleDay || 5);
+  const [selectedCycleDay, setSelectedCycleDay] = useState<number>(defaultCycleDay || 6);
+
+  // Dynamic live canteen menu from backend
+  const [canteenMenu, setCanteenMenu] = useState<Record<string, DishItem[]>>(SAMPLE_CANTEEN_MENU);
+
+  useEffect(() => {
+    axios.get(`/api/v1/canteen/cycle/${selectedCycleDay}`)
+      .then((res) => {
+        if (res.data && res.data.meals) {
+          setCanteenMenu(res.data.meals);
+        }
+      })
+      .catch((err) => {
+        console.error("Ошибка загрузки меню дня:", err);
+      });
+  }, [selectedCycleDay]);
 
   // Health Metrics
   const [healthMetrics, setHealthMetrics] = useState({
@@ -271,7 +287,7 @@ export const App: React.FC = () => {
     let fat = 0;
     let carbs = 0;
 
-    Object.values(SAMPLE_CANTEEN_MENU).flat().forEach((dish) => {
+    Object.values(canteenMenu).flat().forEach((dish) => {
       if (loggedDishes.has(dish.id)) {
         const mult = loggedDishes.get(dish.id) || 1.0;
         cal += dish.calories * mult;
@@ -463,7 +479,7 @@ export const App: React.FC = () => {
                     />
 
                     {/* Canteen Meals Accordion */}
-                    {Object.entries(SAMPLE_CANTEEN_MENU).map(([mealKey, dishes]) => (
+                    {Object.entries(canteenMenu).map(([mealKey, dishes]) => (
                       <div key={mealKey} className="space-y-2">
                         <div className="flex items-center gap-2 px-1">
                           {mealIcons[mealKey]}

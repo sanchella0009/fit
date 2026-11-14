@@ -150,10 +150,12 @@ def parse_full_cycle_menu(dir_path: str) -> Dict[int, List[Dict[str, Any]]]:
 
     return cycle_menu
 
-def get_current_cycle_day(target_date: date, cycle_start_date: date = date(2026, 9, 1)) -> int:
+def get_current_cycle_day(target_date: date, cycle_start_date: date = date(2026, 8, 31)) -> int:
     """
     Рассчитывает текущий день 14-дневного цикла столовой по формуле:
     ((target_date - cycle_start_date).days % 14) + 1
+    31 августа 2026 — Понедельник (День 1 цикла).
+    14 ноября 2026 — Суббота (День 6 цикла).
     """
     delta_days = (target_date - cycle_start_date).days
     return (delta_days % 14) + 1
