@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SegmentedControl } from './SegmentedControl';
 import { triggerHaptic } from '../utils/applePhysics';
-import { User, Lock, Mail, ShieldCheck, ArrowRight, UserCheck } from 'lucide-react';
+import { User, Lock, Mail } from 'lucide-react';
 import { UserProfile } from '../types/auth';
 import axios from 'axios';
 
@@ -18,18 +18,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onAuthSuccess
 }) => {
   const [tab, setTab] = useState<'LOGIN' | 'REGISTER'>('LOGIN');
-  const [username, setUsername] = useState('GorokhovA');
-  const [password, setPassword] = useState('Etopizde3!');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const handleQuickGorokhova = () => {
-    triggerHaptic('light');
-    setUsername('GorokhovA');
-    setPassword('Etopizde3!');
-    setTab('LOGIN');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,28 +79,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             setTab(val as 'LOGIN' | 'REGISTER');
           }}
         />
-
-        {/* Quick Login Pill for GorokhovA */}
-        {tab === 'LOGIN' && (
-          <div
-            onClick={handleQuickGorokhova}
-            className="p-3 rounded-2xl bg-apple-blue/10 dark:bg-apple-blue/20 border border-apple-blue/30 flex items-center justify-between cursor-pointer apple-pressable"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-apple-blue text-white flex items-center justify-center font-bold text-xs">
-                G
-              </div>
-              <div>
-                <h5 className="text-xs font-bold text-[#1C1C1E] dark:text-white flex items-center gap-1">
-                  <span>Войти как GorokhovA</span>
-                  <ShieldCheck className="w-3.5 h-3.5 text-apple-blue" />
-                </h5>
-                <span className="text-[11px] text-apple-gray-1">Администратор • Полный доступ к меню общаги</span>
-              </div>
-            </div>
-            <ArrowRight className="w-4 h-4 text-apple-blue" />
-          </div>
-        )}
 
         {error && (
           <div className="p-3 rounded-xl bg-apple-red/10 text-apple-red text-xs font-medium border border-apple-red/20">

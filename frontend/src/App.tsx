@@ -199,19 +199,19 @@ const SAMPLE_CANTEEN_MENU: Record<string, DishItem[]> = {
   ]
 };
 
-const DEFAULT_GOROKHOVA: UserProfile = {
-  id: 1,
-  username: "GorokhovA",
-  email: "gorokhova@sanchella.ru",
-  role: "ADMIN",
-  dietary_mode: "DORMITORY",
-  webhook_token: "wh_gorokhova_sec_2026_recomp_fit",
-  target_calories: 2400,
-  target_protein_g: 165,
+const GUEST_USER: UserProfile = {
+  id: 0,
+  username: "Гость",
+  email: "guest@fit.sanchella.ru",
+  role: "USER",
+  dietary_mode: "FREE",
+  webhook_token: "",
+  target_calories: 2200,
+  target_protein_g: 150,
   target_fat_g: 70,
-  target_carbs_g: 275,
-  is_admin: true,
-  has_dorm_menu_access: true
+  target_carbs_g: 240,
+  is_admin: false,
+  has_dorm_menu_access: false
 };
 
 export const App: React.FC = () => {
@@ -221,7 +221,15 @@ export const App: React.FC = () => {
   // Active User session (persisted in localStorage)
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('recomp_user');
-    return saved ? JSON.parse(saved) : DEFAULT_GOROKHOVA;
+    const token = localStorage.getItem('recomp_token');
+    if (saved && token) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return GUEST_USER;
+      }
+    }
+    return GUEST_USER;
   });
 
   // Dietary Mode
@@ -274,14 +282,16 @@ export const App: React.FC = () => {
   const [userCustomMenu, setUserCustomMenu] = useState<Record<number, DishItem[]>>({});
 
   // Modals
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(() => {
+    return !localStorage.getItem('recomp_token');
+  });
   const [activeTechCardId, setActiveTechCardId] = useState<number | null>(null);
   const [isConstructorOpen, setIsConstructorOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isCustomMenuOpen, setIsCustomMenuOpen] = useState(false);
 
   // Check if current user is GorokhovA or ADMIN
-  const isGorokhovA = currentUser.username.toLowerCase() === 'gorokhova' || currentUser.is_admin;
+  const isGorokhovA = currentUser.id > 0 && (currentUser.username.toLowerCase() === 'gorokhova' || currentUser.is_admin);
 
   const handleAuthSuccess = (user: UserProfile, token: string) => {
     setCurrentUser(user);
@@ -294,21 +304,9 @@ export const App: React.FC = () => {
     triggerHaptic('medium');
     localStorage.removeItem('recomp_user');
     localStorage.removeItem('recomp_token');
-    setCurrentUser({
-      id: 2,
-      username: "Guest",
-      email: "guest@recomp.local",
-      role: "USER",
-      dietary_mode: "FREE",
-      webhook_token: "guest_wh_token",
-      target_calories: 2200,
-      target_protein_g: 150,
-      target_fat_g: 70,
-      target_carbs_g: 240,
-      is_admin: false,
-      has_dorm_menu_access: false
-    });
+    setCurrentUser(GUEST_USER);
     setDietaryMode('FREE');
+    setIsAuthOpen(true);
   };
 
   // Nutrients total
@@ -408,33 +406,45 @@ export const App: React.FC = () => {
         <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-apple-blue/15 text-apple-blue flex items-center justify-center font-black text-sm">
-              {currentUser.username[0]?.toUpperCase() || 'R'}
+              {currentUser.id > 0 ? (currentUser.username[0]?.toUpperCase() || 'U') : '?'}
             </div>
             <div>
               <div className="flex items-center gap-1">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-apple-gray-1 leading-none">
-                  {currentUser.role === 'ADMIN' ? 'Администратор' : 'Спортсмен'}
+                  {currentUser.id === 0 ? 'Гостевой режим' : (currentUser.role === 'ADMIN' ? 'Администратор' : 'Спортсмен')}
                 </span>
                 {isGorokhovA && <ShieldCheck className="w-3 h-3 text-apple-blue" />}
               </div>
               <h1 className="text-base font-bold tracking-tight text-[#1C1C1E] dark:text-white leading-tight">
-                {currentUser.username}
+                {currentUser.id === 0 ? 'Не авторизован' : currentUser.username}
               </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                triggerHaptic('light');
-                setIsAuthOpen(true);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#2C2C2E] border border-black/[0.08] dark:border-white/[0.1] text-xs font-semibold apple-pressable"
-            >
-              <User className="w-3.5 h-3.5 text-apple-gray-1" />
-              <span>{currentUser.username === 'Guest' ? 'Вход' : 'Аккаунт'}</span>
-            </button>
+            {currentUser.id > 0 ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-apple-red/10 text-apple-red border border-apple-red/20 text-xs font-semibold apple-pressable"
+                title="Выйти из аккаунта"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Выйти</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('light');
+                  setIsAuthOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-apple-blue text-white text-xs font-semibold shadow-sm shadow-apple-blue/30 apple-pressable"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Войти / Регистрация</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -801,21 +811,34 @@ export const App: React.FC = () => {
               </div>
 
               <div className="pt-2 flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAuthOpen(true)}
-                  className="w-full py-2.5 bg-apple-blue/10 dark:bg-apple-blue/20 text-apple-blue rounded-xl text-xs font-bold apple-pressable"
-                >
-                  Сменить аккаунт / Регистрация
-                </button>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="w-full py-2.5 bg-apple-red/10 text-apple-red rounded-xl text-xs font-bold apple-pressable flex items-center justify-center gap-1.5"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Выйти из аккаунта</span>
-                </button>
+                {currentUser.id === 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsAuthOpen(true)}
+                    className="w-full py-3 bg-apple-blue text-white rounded-xl text-xs font-bold shadow-md shadow-apple-blue/30 apple-pressable flex items-center justify-center gap-1.5"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Войти или Зарегистрироваться</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsAuthOpen(true)}
+                      className="w-full py-2.5 bg-apple-blue/10 dark:bg-apple-blue/20 text-apple-blue rounded-xl text-xs font-bold apple-pressable"
+                    >
+                      Сменить аккаунт / Регистрация
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full py-2.5 bg-apple-red/10 text-apple-red rounded-xl text-xs font-bold apple-pressable flex items-center justify-center gap-1.5"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Выйти из аккаунта</span>
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
