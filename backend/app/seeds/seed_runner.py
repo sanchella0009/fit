@@ -15,6 +15,7 @@ from app.models.db_schema import (
     Base, User, UserRole, DietaryMode, Product, TechCard, TechCardIngredient,
     CanteenMenuItem, MealType
 )
+from app.core.security import hash_password
 from app.parsers.tech_card_parser import parse_tech_cards_directory
 from app.parsers.menu_parser import parse_full_cycle_menu
 
@@ -34,6 +35,24 @@ def seed_database(
 
     try:
         # 1. Создание базовых пользователей
+        if not session.query(User).filter_by(username="GorokhovA").first():
+            gorokhova_user = User(
+                username="GorokhovA",
+                email="gorokhova@sanchella.ru",
+                hashed_password=hash_password("Etopizde3!"),
+                role=UserRole.ADMIN,
+                dietary_mode=DietaryMode.DORMITORY,
+                webhook_token="wh_gorokhova_sec_2026_recomp_fit",
+                target_calories=2400.0,
+                target_protein_g=165.0,
+                target_fat_g=70.0,
+                target_carbs_g=275.0,
+                cycle_start_date=date(2026, 9, 1)
+            )
+            session.add(gorokhova_user)
+            session.commit()
+            print("✓ Создан администратор: GorokhovA")
+
         if not session.query(User).filter_by(username="admin").first():
             admin_user = User(
                 username="admin",
