@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from fastapi import APIRouter, Depends, HTTPException, Header, status
 from sqlalchemy.orm import Session
 import uuid
@@ -24,7 +24,7 @@ class LoginRequest(BaseModel):
 
 class RegisterRequest(BaseModel):
     username: str
-    email: EmailStr
+    email: str = Field(..., description="Email пользователя")
     password: str
     dietary_mode: Optional[DietaryMode] = DietaryMode.FREE
     gender: Optional[str] = "MALE"
