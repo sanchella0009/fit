@@ -19,10 +19,8 @@ venv/
 ENV/
 .venv/
 
-# Database & SQLite files
-*.sqlite
-*.sqlite3
-backend/*.db
+# Database files:
+# Note: backend/recomp.db is committed as pre-seeded database for zero-config run
 
 # Logs & temp
 *.log
